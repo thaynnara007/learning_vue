@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 DEBUG = True
@@ -32,10 +32,21 @@ BOOKS = [
 
 @app.route('/books', methods=['GET', 'POST'])
 def get_books():
-  return jsonify({
-    "status": "success",
-    "books": BOOKS
-  })
+  response = {'status':'success'}
+
+  if (request.method == "POST"):
+
+    post_data = request.get_json()
+    BOOKS.append({
+        'title': post_data.get('title'),
+        'author': post_data.get('author'),
+        'read': post_data.get('read')
+    })
+    response['message'] = 'Book added'
+  else:
+    response['books'] = BOOKS
+  
+  return jsonify(response)
 
 if __name__ == '__main__':
   app.run()
